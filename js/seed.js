@@ -1,0 +1,62 @@
+// 初期旅程データ。store が空のとき投入される。
+export const SEED = {
+  meta: {
+    title: '新婚旅行 2026 ヨーロッパ',
+    startDate: '2026-09-12',
+    endDate: '2026-09-23',
+    rates: { EUR: 180, GBP: 210 },
+    people: 2,
+  },
+  events: [
+    { id: 'e1', date: '2026-09-12', time: '01:30', city: '東京', type: 'flight', title: '羽田 出発', meals: {} },
+    { id: 'e2', date: '2026-09-12', time: '04:10', city: '韓国', type: 'flight', title: '仁川 到着・乗継（3時間40分待ち）', meals: {} },
+    { id: 'e3', date: '2026-09-12', time: '07:50', city: '韓国', type: 'flight', title: 'ロンドンへ出発', meals: {} },
+    { id: 'e4', date: '2026-09-12', time: '14:20', city: 'ロンドン', type: 'hotel', title: 'ホテルチェックイン・夕食', meals: { dinner: true } },
+    { id: 'e5', date: '2026-09-13', time: '', city: 'ロンドン', type: 'sightseeing', title: 'ロンドン観光', hotel: 'ロンドン', meals: { breakfast: true, lunch: true, dinner: true } },
+    { id: 'e6', date: '2026-09-14', time: '', city: 'ロンドン', type: 'sightseeing', title: 'ロンドン観光', meals: { lunch: true } },
+    { id: 'e7', date: '2026-09-15', time: '11:00', city: 'ロンドン', type: 'flight', title: 'ユーロスター乗車', meals: {} },
+    { id: 'e8', date: '2026-09-15', time: '13:30', city: 'パリ', type: 'sightseeing', title: 'パリ観光', hotel: 'パリ', meals: { lunch: true } },
+    { id: 'e9', date: '2026-09-16', time: '', city: 'パリ', type: 'sightseeing', title: '前撮り', hotel: 'パリ', meals: { dinner: true } },
+    { id: 'e10', date: '2026-09-17', time: '', city: 'パリ', type: 'sightseeing', title: 'パリ観光', hotel: 'パリ', meals: { lunch: true, dinner: true } },
+    { id: 'e11', date: '2026-09-18', time: '', city: 'パリ', type: 'sightseeing', title: 'パリ観光', hotel: 'パリ', meals: { lunch: true, dinner: true } },
+    { id: 'e12', date: '2026-09-19', time: '06:45', city: 'パリ', type: 'flight', title: 'エールフランス搭乗', meals: { breakfast: true, lunch: true, dinner: true } },
+    { id: 'e13', date: '2026-09-19', time: '08:30', city: 'ヴェネチア', type: 'hotel', title: 'ヴェネチア到着・チェックイン', hotel: 'ヴェネチア', meals: { lunch: true, dinner: true } },
+    { id: 'e14', date: '2026-09-20', time: '', city: 'ヴェネチア', type: 'sightseeing', title: 'ヴェネチア観光', hotel: 'ヴェネチア', meals: { lunch: true, dinner: true } },
+    { id: 'e15', date: '2026-09-21', time: '', city: 'ヴェネチア', type: 'sightseeing', title: 'ヴェネチア観光', hotel: 'ヴェネチア', meals: { lunch: true, dinner: true } },
+    { id: 'e16', date: '2026-09-22', time: '11:20', city: 'ヴェネチア', type: 'flight', title: 'ローマへ出発', meals: { dinner: true } },
+    { id: 'e17', date: '2026-09-22', time: '12:30', city: 'ローマ', type: 'flight', title: 'ローマ到着・乗継', meals: { dinner: true } },
+    { id: 'e18', date: '2026-09-22', time: '14:55', city: 'ローマ', type: 'flight', title: 'ITA AIRWAYS 日本へ出発', meals: {} },
+    { id: 'e19', date: '2026-09-23', time: '10:25', city: '東京', type: 'flight', title: '羽田 到着', meals: {} },
+  ],
+  cities: [
+    { name: 'ロンドン', days: '2日', sights: [
+      { name: '大英博物館', done: false },
+      { name: 'バッキンガム宮殿', done: false },
+      { name: 'ビッグベン', done: false },
+    ]},
+    { name: 'パリ', days: '2.5日', sights: [
+      { name: 'エッフェル塔', done: false },
+      { name: 'エトワール凱旋門(シャンゼリゼ通り)', done: false },
+      { name: 'ルーブル美術館', done: false },
+    ]},
+    { name: 'ヴェネチア', days: '2.5日', sights: [
+      { name: 'ベネチア（街歩き）', done: false },
+    ]},
+    { name: 'ローマ', days: '乗継', sights: [
+      { name: 'バチカン市国', done: false },
+    ]},
+  ],
+  budget: [
+    { category: '航空券 日本→イギリス', planned: 280400, actual: 0, note: 'アシアナ航空' },
+    { category: '航空券 イギリス→パリ', planned: 50000, actual: 0, note: 'ユーロスター、2時間半' },
+    { category: '航空券 パリ→ヴェネチア', planned: 100000, actual: 0, note: 'エールフランス/イージージェット、1時間半' },
+    { category: '航空券 ヴェネチア→日本', planned: 471010, actual: 0, note: 'ITA AIRWAYS' },
+    { category: 'ホテル', planned: 270000, actual: 0, note: '' },
+    { category: '食事', planned: 410000, actual: 0, note: '' },
+    { category: '交通', planned: 30000, actual: 0, note: '' },
+    { category: '観光チケット', planned: 42000, actual: 0, note: '' },
+    { category: 'Wi-Fi・eSIM', planned: 35000, actual: 0, note: '' },
+    { category: '海外保険', planned: 0, actual: 0, note: '未定' },
+    { category: '前撮り', planned: 230000, actual: 0, note: '' },
+  ],
+};
