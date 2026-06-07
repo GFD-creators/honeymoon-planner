@@ -1,5 +1,5 @@
 import {
-  weekStartSunday, weekDays, addWeeks,
+  addDays, weekdayIndex, daysBetween,
   timeToMinutes, minutesToTop, blockHeight, splitTimedAllDay,
   snapMinutes, topToMinutes, minutesToTime,
 } from './week.js';
@@ -7,31 +7,40 @@ import { openEditor } from './editor.js';
 import { update } from './store.js';
 import { attachDrag } from './drag.js';
 
-const GRID = { startHour: 0, endHour: 24, hourHeight: 48 }; // 0:00〜24:00（早朝便も表示）
+const GRID = { startHour: 0, endHour: 24, hourHeight: 48 }; // 0:00〜24:00
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 const TYPE_CLS = { flight: 'flight', sightseeing: 'sightseeing', hotel: 'hotel', food: 'food', other: 'other' };
 
-let currentWeekStart = null; // モジュール内で表示中の週を保持
+let currentPage = 0; // 0始まりの旅行ページ
 
 export function renderWeekView(root, state) {
   root.innerHTML = '';
-  const tripStartDate = state.meta?.startDate || '2026-09-12';
-  if (!currentWeekStart) currentWeekStart = weekStartSunday(tripStartDate);
+  const start = state.meta?.startDate || '2026-09-12';
+  const end = state.meta?.endDate || '2026-09-23';
+  const lastPage = Math.max(0, Math.floor(daysBetween(start, end) / 7));
+  if (currentPage < 0) currentPage = 0;
+  if (currentPage > lastPage) currentPage = lastPage;
 
-  const days = weekDays(currentWeekStart);
-  const tripStart = state.meta?.startDate;
-  const tripEnd = state.meta?.endDate;
+  const pageStart = addDays(start, currentPage * 7);
+  const pageEndCandidate = addDays(pageStart, 6);
+  const pageEnd = daysBetween(pageEndCandidate, end) >= 0 ? pageEndCandidate : end;
+  const span = daysBetween(pageStart, pageEnd);
+  const days = [];
+  for (let i = 0; i <= span; i++) days.push(addDays(pageStart, i));
 
   // ナビ
   const nav = document.createElement('div');
   nav.className = 'week-nav';
-  const prev = navBtn('‹ 前の週', () => { currentWeekStart = addWeeks(currentWeekStart, -1); renderWeekView(root, state); });
+  const prev = navBtn('‹ 前', currentPage === 0, () => {
+    if (currentPage > 0) { currentPage--; renderWeekView(root, state); }
+  });
   const label = document.createElement('span');
   label.className = 'week-label';
-  label.textContent = `${days[0].slice(5).replace('-', '/')} 〜 ${days[6].slice(5).replace('-', '/')}`;
-  const next = navBtn('次の週 ›', () => { currentWeekStart = addWeeks(currentWeekStart, 1); renderWeekView(root, state); });
-  const jump = navBtn('旅程の週へ', () => { currentWeekStart = weekStartSunday(tripStartDate); renderWeekView(root, state); });
-  nav.append(prev, label, next, jump);
+  label.textContent = `${pageStart.slice(5).replace('-', '/')} 〜 ${pageEnd.slice(5).replace('-', '/')}`;
+  const next = navBtn('次 ›', currentPage === lastPage, () => {
+    if (currentPage < lastPage) { currentPage++; renderWeekView(root, state); }
+  });
+  nav.append(prev, label, next);
   root.appendChild(nav);
 
   const dragCtx = {
@@ -79,15 +88,14 @@ export function renderWeekView(root, state) {
   }
   grid.appendChild(axis);
 
-  // 各曜日列
-  days.forEach((d, i) => {
-    const inTrip = tripStart && tripEnd && d >= tripStart && d <= tripEnd;
+  // 各日列（旅行期間内のみ）
+  days.forEach((d) => {
     const col = document.createElement('div');
-    col.className = 'week-col' + (inTrip ? ' in-trip' : '');
+    col.className = 'week-col in-trip';
 
     const head = document.createElement('div');
-    head.className = 'col-head' + (inTrip ? ' in-trip' : '');
-    head.innerHTML = `<span class="dow">${WEEKDAYS[i]}</span><span class="dom">${Number(d.slice(8))}</span>`;
+    head.className = 'col-head in-trip';
+    head.innerHTML = `<span class="dow">${WEEKDAYS[weekdayIndex(d)]}</span><span class="dom">${Number(d.slice(8))}</span>`;
     col.appendChild(head);
 
     const { timed, allDay } = splitTimedAllDay(byDay[d]);
@@ -141,9 +149,9 @@ export function renderWeekView(root, state) {
   root.appendChild(scroller);
 }
 
-function navBtn(text, onClick) {
+function navBtn(text, disabled, onClick) {
   const b = document.createElement('button');
-  b.className = 'link';
+  b.className = 'link' + (disabled ? ' is-disabled' : '');
   b.textContent = text;
   b.addEventListener('click', onClick);
   return b;
