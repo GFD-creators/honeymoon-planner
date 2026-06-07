@@ -67,3 +67,22 @@ export function splitTimedAllDay(events) {
   }
   return { timed, allDay };
 }
+
+// step 単位に四捨五入
+export function snapMinutes(min, step = 30) {
+  return Math.round(min / step) * step;
+}
+
+// minutesToTop の逆。px -> 分
+export function topToMinutes(topPx, opts) {
+  const { startHour, hourHeight } = opts;
+  return startHour * 60 + (topPx / hourHeight) * 60;
+}
+
+// 分 -> 'HH:MM'。0未満は0、1440以上は1439にクランプ
+export function minutesToTime(min) {
+  let m = Math.round(min);
+  if (m < 0) m = 0;
+  if (m > 1439) m = 1439;
+  return `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+}

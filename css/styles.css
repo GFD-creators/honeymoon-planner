@@ -170,3 +170,8 @@ input.edit, select.edit, textarea.edit {
 .view-toggle { display: inline-flex; background: var(--pink-soft); border-radius: 999px; padding: 3px; margin: 0 0 6px; }
 .toggle-btn { border: none; background: none; padding: 6px 18px; border-radius: 999px; font: inherit; color: var(--muted); cursor: pointer; }
 .toggle-btn.is-active { background: #fff; color: var(--pink); font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+/* ドラッグ編集 */
+.event-block { touch-action: none; }
+.event-block.dragging { opacity: 0.85; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 5; }
+.resize-handle { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; cursor: ns-resize; }
