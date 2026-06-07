@@ -125,7 +125,9 @@ function eventCard(ev) {
     timeHtml +
     `<div class="ttl">${flightBadge}${layover}${ev.title}</div>` +
     (ev.hotel ? `<div class="meta">🏨 宿: ${ev.hotel}</div>` : '') +
-    (mealLabel(ev.meals) ? `<div class="meta">${mealLabel(ev.meals)}</div>` : '');
+    (mealLabel(ev.meals) ? `<div class="meta">${mealLabel(ev.meals)}</div>` : '') +
+    (ev.cost > 0 ? `<div class="meta">💴 ¥${Number(ev.cost).toLocaleString()}` +
+      `${ev.costCategory ? `（${ev.costCategory}）` : ''}</div>` : '');
 
   el.addEventListener('click', () => openEditor(ev));
   return el;

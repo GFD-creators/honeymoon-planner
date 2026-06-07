@@ -1,4 +1,5 @@
 import { update } from './store.js';
+import { COST_CATEGORIES } from './budget.js';
 
 const TYPES = [
   { value: 'flight', label: '移動' },
@@ -42,6 +43,10 @@ export function openEditor(event, opts) {
   sheet.className = 'editor-sheet';
   const typeOptions = TYPES.map((t) =>
     `<option value="${t.value}"${t.value === ev.type ? ' selected' : ''}>${t.label}</option>`).join('');
+  const costCatOptions = ['<option value="">（未分類）</option>']
+    .concat(COST_CATEGORIES.map((c) =>
+      `<option value="${c}"${c === (ev.costCategory || '') ? ' selected' : ''}>${c}</option>`))
+    .join('');
 
   sheet.innerHTML = `
     <h3 class="editor-title">${isNew ? '予定を追加' : '予定を編集'}</h3>
@@ -60,6 +65,14 @@ export function openEditor(event, opts) {
       </label>
       <label class="editor-field">終了
         <input class="edit" id="ed-endtime" type="time" value="${ev.endTime || ''}" />
+      </label>
+    </div>
+    <div class="editor-row">
+      <label class="editor-field">料金（円）
+        <input class="edit" id="ed-cost" type="number" min="0" step="100" value="${ev.cost || ''}" placeholder="例: 12000" />
+      </label>
+      <label class="editor-field">カテゴリ
+        <select class="edit" id="ed-costcat">${costCatOptions}</select>
       </label>
     </div>
     <p class="editor-hint">開始を空にすると「終日」になります</p>
@@ -83,6 +96,8 @@ export function openEditor(event, opts) {
       date: sheet.querySelector('#ed-date').value,
       time: sheet.querySelector('#ed-time').value,
       endTime: sheet.querySelector('#ed-endtime').value,
+      cost: Number(sheet.querySelector('#ed-cost').value) || 0,
+      costCategory: sheet.querySelector('#ed-costcat').value,
     };
     update((s) => {
       const target = s.events.find((e) => e.id === ev.id);

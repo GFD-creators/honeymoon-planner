@@ -1,4 +1,4 @@
-import { totalPlanned, totalActual, perPerson, toEUR, remaining } from './budget.js';
+import { totalPlanned, totalActual, perPerson, toEUR, remaining, totalCost, costByCategory } from './budget.js';
 import { update } from './store.js';
 
 const COLORS = ['#ff7eb6', '#ffd166', '#5ed6c0', '#6ec6ff', '#c08cff', '#ff9f7e'];
@@ -8,6 +8,8 @@ export function renderBudget(root, state) {
   const rate = state.meta?.rates?.EUR || 180;
   const people = state.meta?.people || 2;
   const planned = totalPlanned(items);
+  const cost = totalCost(state.events);
+  const byCat = costByCategory(state.events);
 
   // 合計カード
   const total = document.createElement('div');
@@ -18,7 +20,8 @@ export function renderBudget(root, state) {
     `<div class="sub">1人あたり ¥${perPerson(planned, people).toLocaleString()}` +
     ` ／ €${toEUR(planned, rate).toLocaleString()}</div>` +
     `<div class="sub">実績 ¥${totalActual(items).toLocaleString()}` +
-    `（残 ¥${remaining(items).toLocaleString()}）</div>`;
+    `（残 ¥${remaining(items).toLocaleString()}）</div>` +
+    `<div class="sub">🧾 実費合計 ¥${cost.toLocaleString()}</div>`;
   root.appendChild(total);
 
   // 内訳バー
@@ -37,6 +40,23 @@ export function renderBudget(root, state) {
     breakdown.appendChild(row);
   });
   root.appendChild(breakdown);
+
+  // 旅程の実費セクション
+  const actuals = document.createElement('div');
+  actuals.className = 'card';
+  let actualsHtml = '<div class="day-head" style="margin:0 0 8px"><span class="date">🧾 旅程の実費</span></div>';
+  if (byCat.length === 0) {
+    actualsHtml += '<p class="sub">旅程の予定に料金を入れると、ここに集計されます</p>';
+  } else {
+    byCat.forEach((c) => {
+      actualsHtml += `<div class="bar-row"><div class="label"><span>${c.category}</span>` +
+        `<span>¥${c.amount.toLocaleString()}</span></div></div>`;
+    });
+    actualsHtml += `<div class="label" style="font-weight:700;margin-top:8px">` +
+      `<span>実費合計</span><span>¥${cost.toLocaleString()}</span></div>`;
+  }
+  actuals.innerHTML = actualsHtml;
+  root.appendChild(actuals);
 
   const hint = document.createElement('p');
   hint.className = 'sub';
