@@ -16,14 +16,22 @@ function escapeAttr(s) {
     .replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// event=null で新規。defaultDate は新規時の初期日付。
-export function openEditor(event, defaultDate) {
+// event=null で新規。opts = { defaultDate, defaultTime, prefill:{title,city,type}, onSaved(id,isNew) }。
+// 後方互換: opts が文字列なら defaultDate として扱う。
+export function openEditor(event, opts) {
   closeEditor();
+  const o = typeof opts === 'string' ? { defaultDate: opts } : (opts || {});
+  const pre = o.prefill || {};
   const isNew = !event;
   const ev = event || {
     id: 'e' + Date.now(),
-    date: defaultDate || '2026-09-12',
-    time: '', endTime: '', city: '', type: 'sightseeing', title: '', meals: {},
+    date: o.defaultDate || '2026-09-12',
+    time: o.defaultTime || '',
+    endTime: '',
+    city: pre.city || '',
+    type: pre.type || 'sightseeing',
+    title: pre.title || '',
+    meals: {},
   };
 
   overlay = document.createElement('div');
@@ -81,6 +89,7 @@ export function openEditor(event, defaultDate) {
       if (target) Object.assign(target, patch);
       else s.events.push({ ...ev, ...patch });
     });
+    if (o.onSaved) o.onSaved(ev.id, isNew);
     closeEditor();
   });
 

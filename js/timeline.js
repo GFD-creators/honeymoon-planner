@@ -54,7 +54,7 @@ export function renderTimeline(root, state) {
   fab.className = 'fab';
   fab.textContent = '＋';
   fab.title = '予定を追加';
-  fab.addEventListener('click', () => openEditor(null, firstDate));
+  fab.addEventListener('click', () => openEditor(null, { defaultDate: firstDate }));
   root.appendChild(fab);
 
   function setView(v) {
@@ -89,6 +89,12 @@ function renderList(root, state) {
     head.innerHTML =
       `<span class="date">${date.slice(5).replace('-', '/')}</span>` +
       `<span class="weekday">(${weekdayOf(date)})</span>`;
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-day';
+    addBtn.textContent = '＋';
+    addBtn.title = 'この日に予定を追加';
+    addBtn.addEventListener('click', () => openEditor(null, { defaultDate: date }));
+    head.appendChild(addBtn);
     root.appendChild(head);
 
     const events = byDate[date].sort((a, b) => (a.time || '').localeCompare(b.time || ''));

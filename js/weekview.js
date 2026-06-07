@@ -1,6 +1,7 @@
 import {
   weekStartSunday, weekDays, addWeeks,
   timeToMinutes, minutesToTop, blockHeight, splitTimedAllDay,
+  snapMinutes, topToMinutes, minutesToTime,
 } from './week.js';
 import { openEditor } from './editor.js';
 import { update } from './store.js';
@@ -106,6 +107,12 @@ export function renderWeekView(root, state) {
     body.className = 'col-body';
     body.dataset.date = d;
     body.style.height = (GRID.endHour - GRID.startHour) * GRID.hourHeight + 'px';
+    body.addEventListener('click', (e) => {
+      if (e.target.closest('.event-block')) return; // ブロック上は従来の編集
+      const top = body.getBoundingClientRect().top;
+      const min = snapMinutes(topToMinutes(e.clientY - top, GRID), 30);
+      openEditor(null, { defaultDate: d, defaultTime: minutesToTime(min) });
+    });
     for (let h = GRID.startHour; h < GRID.endHour; h++) {
       const line = document.createElement('div');
       line.className = 'hour-line';
