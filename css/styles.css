@@ -112,3 +112,27 @@ input.edit, select.edit, textarea.edit {
   width: 100%; padding: 8px 10px; border: 1.5px solid var(--pink-soft);
   border-radius: 10px; font: inherit; margin: 4px 0;
 }
+
+/* 編集シート */
+.editor-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(58, 47, 58, 0.4);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.editor-sheet {
+  background: #fff; width: 100%; max-width: 480px;
+  border-radius: 22px 22px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.18);
+  animation: sheet-up 0.18s ease-out;
+}
+@keyframes sheet-up { from { transform: translateY(30px); opacity: 0.6; } to { transform: none; opacity: 1; } }
+.editor-title { font-size: 1.05rem; margin-bottom: 10px; color: var(--pink); }
+.editor-field { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
+.editor-row { display: flex; gap: 10px; }
+.editor-row .editor-field { flex: 1; }
+.editor-hint { font-size: 0.75rem; color: var(--muted); margin: 2px 0 12px; }
+.editor-actions { display: flex; gap: 8px; align-items: center; }
+.editor-actions button { border: none; border-radius: 12px; padding: 10px 16px; font: inherit; cursor: pointer; }
+.btn-save { background: var(--pink); color: #fff; font-weight: 700; flex: 1; }
+.btn-delete { background: #fff; color: #d44; border: 1.5px solid #f3c0c0 !important; }
+.btn-cancel { background: var(--pink-soft); color: var(--ink); }
