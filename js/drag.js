@@ -4,6 +4,11 @@ import {
 
 const THRESHOLD = 6; // px。これ未満の移動はタップ扱い
 
+// ポインタキャプチャは環境によって例外を投げ得る（アクティブポインタ無し等）。
+// 失敗してもドラッグ自体は継続できるため握り潰す。
+function safeCapture(el, id) { try { el.setPointerCapture(id); } catch (e) { /* ignore */ } }
+function safeRelease(el, id) { try { el.releasePointerCapture(id); } catch (e) { /* ignore */ } }
+
 // blockEl: 対象ブロック要素 / ev: イベント / ctx: { opts, snapStep, getColumns, onCommit, onTap }
 export function attachDrag(blockEl, ev, ctx) {
   const handle = blockEl.querySelector('.resize-handle');
@@ -24,7 +29,7 @@ export function attachDrag(blockEl, ev, ctx) {
     const dur = origEnd != null ? origEnd - origStart : 0;
     let dragging = false;
     let pending = null;
-    blockEl.setPointerCapture(down.pointerId);
+    safeCapture(blockEl, down.pointerId);
 
     function onMove(e) {
       const dx = e.clientX - startX;
@@ -46,7 +51,7 @@ export function attachDrag(blockEl, ev, ctx) {
     }
 
     function onUp() {
-      blockEl.releasePointerCapture(down.pointerId);
+      safeRelease(blockEl, down.pointerId);
       blockEl.removeEventListener('pointermove', onMove);
       blockEl.removeEventListener('pointerup', onUp);
       blockEl.classList.remove('dragging');
@@ -70,7 +75,7 @@ export function attachDrag(blockEl, ev, ctx) {
     const col = cols.find((c) => c.date === ev.date) || cols[0];
     let dragging = false;
     let endPending = null;
-    handle.setPointerCapture(down.pointerId);
+    safeCapture(handle, down.pointerId);
 
     function onMove(e) {
       const dy = e.clientY - down.clientY;
@@ -84,7 +89,7 @@ export function attachDrag(blockEl, ev, ctx) {
     }
 
     function onUp() {
-      handle.releasePointerCapture(down.pointerId);
+      safeRelease(handle, down.pointerId);
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       blockEl.classList.remove('dragging');
