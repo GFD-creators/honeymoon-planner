@@ -3,6 +3,8 @@ import {
   timeToMinutes, minutesToTop, blockHeight, splitTimedAllDay,
 } from './week.js';
 import { openEditor } from './editor.js';
+import { update } from './store.js';
+import { attachDrag } from './drag.js';
 
 const GRID = { startHour: 0, endHour: 24, hourHeight: 48 }; // 0:00〜24:00（早朝便も表示）
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
@@ -30,6 +32,24 @@ export function renderWeekView(root, state) {
   const jump = navBtn('旅程の週へ', () => { currentWeekStart = weekStartSunday(tripStartDate); renderWeekView(root, state); });
   nav.append(prev, label, next, jump);
   root.appendChild(nav);
+
+  const dragCtx = {
+    opts: GRID,
+    snapStep: 30,
+    getColumns() {
+      return [...root.querySelectorAll('.col-body')].map((el) => ({
+        date: el.dataset.date,
+        rect: el.getBoundingClientRect(),
+      }));
+    },
+    onCommit(id, patch) {
+      update((s) => {
+        const t = s.events.find((e) => e.id === id);
+        if (t) Object.assign(t, patch);
+      });
+    },
+    onTap(ev) { openEditor(ev); },
+  };
 
   // 日別グルーピング
   const byDay = {};
@@ -84,6 +104,7 @@ export function renderWeekView(root, state) {
 
     const body = document.createElement('div');
     body.className = 'col-body';
+    body.dataset.date = d;
     body.style.height = (GRID.endHour - GRID.startHour) * GRID.hourHeight + 'px';
     for (let h = GRID.startHour; h < GRID.endHour; h++) {
       const line = document.createElement('div');
@@ -99,7 +120,10 @@ export function renderWeekView(root, state) {
       block.style.left = (lane / lanes) * 100 + '%';
       block.style.width = (1 / lanes) * 100 + '%';
       block.innerHTML = `<span class="bk-time">${ev.time}</span><span class="bk-title">${ev.title}</span>`;
-      block.addEventListener('click', () => openEditor(ev));
+      const handle = document.createElement('div');
+      handle.className = 'resize-handle';
+      block.appendChild(handle);
+      attachDrag(block, ev, dragCtx);
       body.appendChild(block);
     });
     col.appendChild(body);
