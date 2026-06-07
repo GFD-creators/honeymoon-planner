@@ -175,3 +175,9 @@ input.edit, select.edit, textarea.edit {
 .event-block { touch-action: none; }
 .event-block.dragging { opacity: 0.85; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 5; }
 .resize-handle { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; cursor: ns-resize; }
+
+/* リスト日ヘッダの追加ボタン */
+.add-day {
+  margin-left: auto; border: none; background: var(--pink-soft); color: var(--pink);
+  width: 24px; height: 24px; border-radius: 50%; font-size: 1rem; line-height: 1; cursor: pointer;
+}
