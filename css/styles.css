@@ -181,3 +181,9 @@ input.edit, select.edit, textarea.edit {
   margin-left: auto; border: none; background: var(--pink-soft); color: var(--pink);
   width: 24px; height: 24px; border-radius: 50%; font-size: 1rem; line-height: 1; cursor: pointer;
 }
+
+/* 行き先の旅程連動 */
+.sight-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.sight-schedule { border: none; background: var(--sky-soft); color: #2b7fb8; font-size: 0.72rem; padding: 3px 8px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.sight-add { border: none; background: none; color: var(--pink); font-size: 0.72rem; cursor: pointer; white-space: nowrap; }
+.sight-unlink { border: none; background: none; color: var(--muted); font-size: 0.72rem; cursor: pointer; }
