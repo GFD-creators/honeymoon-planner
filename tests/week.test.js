@@ -4,6 +4,7 @@ import {
   weekStartSunday, weekDays, addWeeks,
   timeToMinutes, minutesToTop, blockHeight, splitTimedAllDay,
   snapMinutes, topToMinutes, minutesToTime,
+  addDays, weekdayIndex, daysBetween,
 } from '../js/week.js';
 
 const OPTS = { startHour: 5, hourHeight: 48 };
@@ -86,4 +87,25 @@ test('minutesToTime: 分を時刻文字列に、範囲外はクランプ', () =>
   assert.equal(minutesToTime(860), '14:20');
   assert.equal(minutesToTime(-10), '00:00');
   assert.equal(minutesToTime(1500), '23:59');
+});
+
+test('addDays: 月をまたいで+1', () => {
+  assert.equal(addDays('2026-09-30', 1), '2026-10-01');
+});
+
+test('addDays: 負・+7', () => {
+  assert.equal(addDays('2026-09-12', -1), '2026-09-11');
+  assert.equal(addDays('2026-09-12', 7), '2026-09-19');
+});
+
+test('weekdayIndex: 9/12は土(6)、9/13は日(0)', () => {
+  assert.equal(weekdayIndex('2026-09-12'), 6);
+  assert.equal(weekdayIndex('2026-09-13'), 0);
+  assert.equal(weekdayIndex('2026-09-19'), 6);
+});
+
+test('daysBetween: 9/12→9/23は11、同日0、逆順は負', () => {
+  assert.equal(daysBetween('2026-09-12', '2026-09-23'), 11);
+  assert.equal(daysBetween('2026-09-12', '2026-09-12'), 0);
+  assert.equal(daysBetween('2026-09-23', '2026-09-12'), -11);
 });

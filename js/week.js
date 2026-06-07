@@ -86,3 +86,18 @@ export function minutesToTime(min) {
   if (m > 1439) m = 1439;
   return `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
 }
+
+// 日付を n 日進める（負も可）
+export function addDays(dateStr, n) {
+  return utcToDateStr(dateToUTC(dateStr) + n * DAY_MS);
+}
+
+// 曜日番号 0=日 … 6=土
+export function weekdayIndex(dateStr) {
+  return new Date(dateToUTC(dateStr)).getUTCDay();
+}
+
+// end - start の日数差（整数）
+export function daysBetween(startStr, endStr) {
+  return Math.round((dateToUTC(endStr) - dateToUTC(startStr)) / DAY_MS);
+}

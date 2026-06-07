@@ -191,3 +191,6 @@ input.edit, select.edit, textarea.edit {
 /* 行き先の削除ボタン */
 .city-delete { margin-left: auto; border: none; background: none; color: var(--muted); font-size: 0.95rem; cursor: pointer; }
 .sight-delete { border: none; background: none; color: var(--muted); font-size: 0.9rem; cursor: pointer; padding: 0 2px; }
+
+/* 週ナビの無効ボタン（端） */
+.week-nav .link.is-disabled { opacity: 0.3; pointer-events: none; }
