@@ -194,3 +194,6 @@ input.edit, select.edit, textarea.edit {
 
 /* 週ナビの無効ボタン（端） */
 .week-nav .link.is-disabled { opacity: 0.3; pointer-events: none; }
+
+/* 週表示のときだけ表示領域を広げる */
+.view.wide { max-width: min(96vw, 1100px); }

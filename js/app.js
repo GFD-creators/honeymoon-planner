@@ -15,6 +15,7 @@ const renderers = {
 function render() {
   const state = getState();
   viewEl.innerHTML = '';
+  viewEl.classList.remove('wide'); // 既定は narrow（週表示時に timeline が再付与）
   renderers[current](viewEl, state);
 }
 
