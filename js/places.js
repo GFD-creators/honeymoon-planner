@@ -1,6 +1,6 @@
 import { update } from './store.js';
 import { openEditor } from './editor.js';
-import { findLinkedEvent } from './link.js';
+import { findLinkedEvent, linkedEventIds } from './link.js';
 
 export function renderPlaces(root, state) {
   for (const city of state.cities) {
@@ -11,6 +11,23 @@ export function renderPlaces(root, state) {
       `<div class="day-head" style="margin:0 0 6px">` +
       `<span class="date">${city.name}</span>` +
       `<span class="weekday">${city.days}・${doneCount}/${city.sights.length} 達成</span></div>`;
+
+    const header = card.querySelector('.day-head');
+    const cityDel = document.createElement('button');
+    cityDel.className = 'city-delete';
+    cityDel.textContent = '🗑';
+    cityDel.title = 'この都市を削除';
+    cityDel.addEventListener('click', () => {
+      if (!confirm(`「${city.name}」を削除しますか？関連する旅程の予定も削除されます。`)) return;
+      update((s) => {
+        const c = s.cities.find((x) => x.name === city.name);
+        if (!c) return;
+        const ids = linkedEventIds(c.sights);
+        s.events = s.events.filter((e) => !ids.includes(e.id));
+        s.cities = s.cities.filter((x) => x.name !== city.name);
+      });
+    });
+    header.appendChild(cityDel);
 
     city.sights.forEach((sight, i) => {
       const row = document.createElement('div');
@@ -87,6 +104,28 @@ export function renderPlaces(root, state) {
         });
         actions.appendChild(addBtn);
       }
+
+      const sightDel = document.createElement('button');
+      sightDel.className = 'sight-delete';
+      sightDel.textContent = '✕';
+      sightDel.title = 'この見どころを削除';
+      sightDel.addEventListener('click', () => {
+        if (findLinkedEvent(state.events, sight)) {
+          if (!confirm('この見どころとリンクした旅程の予定も削除しますか？')) return;
+        }
+        update((s) => {
+          const c = s.cities.find((x) => x.name === city.name);
+          if (!c) return;
+          const sgt = c.sights[i];
+          if (sgt && sgt.eventId) {
+            const idx = s.events.findIndex((e) => e.id === sgt.eventId);
+            if (idx >= 0) s.events.splice(idx, 1);
+          }
+          c.sights.splice(i, 1);
+        });
+      });
+      actions.appendChild(sightDel);
+
       row.appendChild(actions);
       card.appendChild(row);
     });

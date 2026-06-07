@@ -7,3 +7,8 @@ export function findLinkedEvent(events, sight) {
 export function isScheduled(events, sight) {
   return findLinkedEvent(events, sight) != null;
 }
+
+// sights のうち eventId を持つものの id 配列を返す
+export function linkedEventIds(sights) {
+  return sights.filter((s) => s && s.eventId).map((s) => s.eventId);
+}
