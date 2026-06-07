@@ -61,6 +61,7 @@ export function renderTimeline(root, state) {
     saveView(v);
     toggle.querySelectorAll('.toggle-btn').forEach((b) =>
       b.classList.toggle('is-active', b.dataset.view === v));
+    root.classList.toggle('wide', v === 'week'); // 週表示のみ #view を広げる
     container.innerHTML = '';
     if (v === 'week') renderWeekView(container, state);
     else renderList(container, state);
