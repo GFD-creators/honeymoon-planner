@@ -4,7 +4,7 @@ import {
 } from './week.js';
 import { openEditor } from './editor.js';
 
-const GRID = { startHour: 5, endHour: 26, hourHeight: 48 }; // 5:00〜翌2:00
+const GRID = { startHour: 0, endHour: 24, hourHeight: 48 }; // 0:00〜24:00（早朝便も表示）
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
 const TYPE_CLS = { flight: 'flight', sightseeing: 'sightseeing', hotel: 'hotel', food: 'food', other: 'other' };
 
