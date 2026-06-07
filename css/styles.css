@@ -165,3 +165,8 @@ input.edit, select.edit, textarea.edit {
 .allday-chip.hotel, .event-block.hotel { background: var(--mint); }
 .allday-chip.food, .event-block.food { background: var(--lemon); color: #7a5b00; }
 .allday-chip.other, .event-block.other { background: #c08cff; }
+
+/* 表示切替トグル */
+.view-toggle { display: inline-flex; background: var(--pink-soft); border-radius: 999px; padding: 3px; margin: 0 0 6px; }
+.toggle-btn { border: none; background: none; padding: 6px 18px; border-radius: 999px; font: inherit; color: var(--muted); cursor: pointer; }
+.toggle-btn.is-active { background: #fff; color: var(--pink); font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }

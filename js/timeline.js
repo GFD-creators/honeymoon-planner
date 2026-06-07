@@ -1,17 +1,26 @@
 import { formatLocalAndJapan } from './timezone.js';
-import { update } from './store.js';
+import { openEditor } from './editor.js';
+import { renderWeekView } from './weekview.js';
 
 const TYPE_META = {
   flight: { cls: 'flight', icon: '🛫' },
   sightseeing: { cls: 'sightseeing', icon: '📸' },
   hotel: { cls: 'hotel', icon: '🏨' },
   food: { cls: 'food', icon: '🍽' },
+  other: { cls: 'sightseeing', icon: '📍' },
 };
 
 const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+const VIEW_KEY = 'hp-timeline-view';
+
+function loadView() {
+  try { return localStorage.getItem(VIEW_KEY) || 'list'; } catch (e) { return 'list'; }
+}
+function saveView(v) {
+  try { localStorage.setItem(VIEW_KEY, v); } catch (e) { /* ignore */ }
+}
 
 function weekdayOf(dateStr) {
-  // タイムゾーン非依存で曜日を計算（UTC固定）
   const [y, m, d] = dateStr.split('-').map(Number);
   const idx = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   return WEEKDAYS[idx];
@@ -26,10 +35,52 @@ function mealLabel(meals = {}) {
 }
 
 export function renderTimeline(root, state) {
-  const byDate = {};
-  for (const ev of state.events) {
-    (byDate[ev.date] ||= []).push(ev);
+  const view = loadView();
+
+  const toggle = document.createElement('div');
+  toggle.className = 'view-toggle';
+  const listBtn = toggleBtn('リスト', 'list');
+  const weekBtn = toggleBtn('週', 'week');
+  toggle.append(listBtn, weekBtn);
+  root.appendChild(toggle);
+
+  const container = document.createElement('div');
+  container.className = 'timeline-container';
+  root.appendChild(container);
+
+  // ＋ボタン（両ビュー共通）
+  const firstDate = state.meta?.startDate || '2026-09-12';
+  const fab = document.createElement('button');
+  fab.className = 'fab';
+  fab.textContent = '＋';
+  fab.title = '予定を追加';
+  fab.addEventListener('click', () => openEditor(null, firstDate));
+  root.appendChild(fab);
+
+  function setView(v) {
+    saveView(v);
+    toggle.querySelectorAll('.toggle-btn').forEach((b) =>
+      b.classList.toggle('is-active', b.dataset.view === v));
+    container.innerHTML = '';
+    if (v === 'week') renderWeekView(container, state);
+    else renderList(container, state);
   }
+
+  function toggleBtn(label, value) {
+    const b = document.createElement('button');
+    b.className = 'toggle-btn';
+    b.dataset.view = value;
+    b.textContent = label;
+    b.addEventListener('click', () => setView(value));
+    return b;
+  }
+
+  setView(view);
+}
+
+function renderList(root, state) {
+  const byDate = {};
+  for (const ev of state.events) (byDate[ev.date] ||= []).push(ev);
   const dates = Object.keys(byDate).sort();
 
   for (const date of dates) {
@@ -41,17 +92,8 @@ export function renderTimeline(root, state) {
     root.appendChild(head);
 
     const events = byDate[date].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-    for (const ev of events) {
-      root.appendChild(eventCard(ev));
-    }
+    for (const ev of events) root.appendChild(eventCard(ev));
   }
-
-  const fab = document.createElement('button');
-  fab.className = 'fab';
-  fab.textContent = '＋';
-  fab.title = '予定を追加';
-  fab.addEventListener('click', () => addEvent(dates[0]));
-  root.appendChild(fab);
 }
 
 function eventCard(ev) {
@@ -59,7 +101,7 @@ function eventCard(ev) {
   const el = document.createElement('div');
   el.className = `card event ${meta.cls}`;
 
-  let timeHtml = '';
+  let timeHtml;
   if (ev.time) {
     const t = formatLocalAndJapan(ev.city, ev.date, ev.time);
     const [local, jp] = t.split(' / ');
@@ -69,10 +111,8 @@ function eventCard(ev) {
     timeHtml = `<div class="time">${meta.icon} 終日</div>`;
   }
 
-  const layover = /待ち/.test(ev.title)
-    ? `<span class="badge layover">乗継待ち</span>` : '';
-  const flightBadge = ev.type === 'flight'
-    ? `<span class="badge flight">${ev.city}</span>` : '';
+  const layover = /待ち/.test(ev.title) ? `<span class="badge layover">乗継待ち</span>` : '';
+  const flightBadge = ev.type === 'flight' && ev.city ? `<span class="badge flight">${ev.city}</span>` : '';
 
   el.innerHTML =
     timeHtml +
@@ -80,29 +120,6 @@ function eventCard(ev) {
     (ev.hotel ? `<div class="meta">🏨 宿: ${ev.hotel}</div>` : '') +
     (mealLabel(ev.meals) ? `<div class="meta">${mealLabel(ev.meals)}</div>` : '');
 
-  el.addEventListener('click', () => editEvent(ev));
+  el.addEventListener('click', () => openEditor(ev));
   return el;
-}
-
-function editEvent(ev) {
-  const title = prompt('内容を編集', ev.title);
-  if (title === null) return;
-  const time = prompt('時刻（HH:MM、終日は空欄）', ev.time || '');
-  if (time === null) return;
-  update((s) => {
-    const target = s.events.find((e) => e.id === ev.id);
-    if (target) { target.title = title; target.time = time; }
-  });
-}
-
-function addEvent(defaultDate) {
-  const date = prompt('日付（YYYY-MM-DD）', defaultDate);
-  if (!date) return;
-  const title = prompt('内容', '');
-  if (!title) return;
-  const time = prompt('時刻（HH:MM、終日は空欄）', '') || '';
-  const city = prompt('都市（東京/韓国/ロンドン/パリ/ヴェネチア/ローマ）', 'パリ') || '';
-  update((s) => {
-    s.events.push({ id: 'e' + Date.now(), date, time, city, type: 'sightseeing', title, meals: {} });
-  });
 }
