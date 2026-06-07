@@ -136,3 +136,32 @@ input.edit, select.edit, textarea.edit {
 .btn-save { background: var(--pink); color: #fff; font-weight: 700; flex: 1; }
 .btn-delete { background: #fff; color: #d44; border: 1.5px solid #f3c0c0 !important; }
 .btn-cancel { background: var(--pink-soft); color: var(--ink); }
+
+/* 週グリッド */
+.week-nav { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 10px; }
+.week-label { font-weight: 700; color: var(--pink); font-size: 0.95rem; }
+.week-scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 14px; background: #fff; box-shadow: var(--shadow); }
+.week-grid { display: flex; min-width: 760px; }
+.week-axis { flex: 0 0 46px; position: sticky; left: 0; z-index: 2; background: #fff; }
+.axis-corner { height: 40px; }
+.axis-allday { height: 30px; border-bottom: 1px solid var(--pink-soft); }
+.axis-hour { font-size: 0.65rem; color: var(--muted); text-align: right; padding-right: 4px; box-sizing: border-box; border-top: 1px solid #f3eef1; }
+.week-col { flex: 1 1 0; min-width: 92px; border-left: 1px solid #f3eef1; }
+.col-head { height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.col-head .dow { font-size: 0.7rem; color: var(--muted); }
+.col-head .dom { font-size: 1rem; font-weight: 700; }
+.col-head.in-trip { background: var(--pink-soft); }
+.col-head.in-trip .dom { color: var(--pink); }
+.col-allday { height: 30px; overflow: hidden; border-bottom: 1px solid var(--pink-soft); padding: 2px; }
+.allday-chip { display: block; width: 100%; border: none; border-radius: 6px; font-size: 0.62rem; padding: 2px 4px; margin-bottom: 2px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: #fff; }
+.col-body { position: relative; }
+.hour-line { position: absolute; left: 0; right: 0; border-top: 1px solid #f3eef1; }
+.event-block { position: absolute; border: none; border-radius: 6px; color: #fff; font-size: 0.6rem; padding: 2px 3px; overflow: hidden; text-align: left; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.event-block .bk-time { display: block; font-weight: 700; }
+.event-block .bk-title { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 種別色（チップ＆ブロック共通） */
+.allday-chip.flight, .event-block.flight { background: var(--sky); }
+.allday-chip.sightseeing, .event-block.sightseeing { background: var(--pink); }
+.allday-chip.hotel, .event-block.hotel { background: var(--mint); }
+.allday-chip.food, .event-block.food { background: var(--lemon); color: #7a5b00; }
+.allday-chip.other, .event-block.other { background: #c08cff; }
