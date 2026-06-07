@@ -1,0 +1,10 @@
+{
+  "name": "honeymoon-planner",
+  "version": "1.0.0",
+  "description": "新婚旅行のスケジュール・行き先・予算ダッシュボード",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}
